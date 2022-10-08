@@ -8,13 +8,20 @@ function showModal(event) {
   const source = event.target || event.srcElement;
   const modalImage = gradioApp().getElementById("modalImage")
   const lb = gradioApp().getElementById("lightboxModal")
-  modalImage.src = source.src
-  if (modalImage.style.display === 'none') {
-    lb.style.setProperty('background-image', 'url(' + source.src + ')');
-  }
+  copySrc(source, modalImage);
   lb.style.display = "block";
   lb.focus()
   event.stopPropagation()
+}
+
+function copySrc(source, target) {
+  if (target.src) {
+    URL.revokeObjectURL(target.src)
+  }
+  fetch(source.src)
+    .then((data) => data.blob())
+    .then((b) => URL.createObjectURL(b))
+    .then((u) => {target.src = u})
 }
 
 function negmod(n, m) {
@@ -47,7 +54,7 @@ function modalImageSwitch(offset){
         nextButton.click()
         const modalImage = gradioApp().getElementById("modalImage");
         const modal = gradioApp().getElementById("lightboxModal");
-        modalImage.src = nextButton.children[0].src;
+        copySrc(nextButton.children[0], modalImage)
         if (modalImage.style.display === 'none') {
             modal.style.setProperty('background-image', `url(${modalImage.src})`)
         }
